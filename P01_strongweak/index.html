@@ -1,18 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/p5@2.3.2/lib/p5.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/p5.sound@0.4.1/dist/p5.sound.min.js"></script>
-    
-    
-    
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <meta charset="utf-8" />
 
-  </head>
-  <body>
-    <main>
-    </main>
-    <script src="sketch.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Strong and Weak Form | FEM Parametric</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@2.3.2/lib/p5.js"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      color: #222;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 50px 40px 80px;
+    }
+
+    .header {
+      max-width: 900px;
+      margin: 0 auto 35px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      font-weight: 600;
+    }
+
+    .header p {
+      margin: 0 auto;
+      max-width: 760px;
+      font-size: 17px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .interactive {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    #sketch-holder {
+      background: white;
+      border: 1px solid #ddd;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    }
+
+    canvas {
+      display: block;
+    }
+
+    @media (max-width: 1050px) {
+
+      .page {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      #sketch-holder {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+  <main class="page">
+
+    <header class="header">
+
+      <h1>Strong and Weak Form</h1>
+
+      <p>
+        This interactive example compares the exact solution of a
+        one-dimensional continuum problem with its finite element
+        approximation. Change the number of elements, toggle the body
+        force, and move along the member to investigate the displacement,
+        strain, and stress fields.
+      </p>
+
+    </header>
+
+
+    <section class="interactive">
+
+      <div id="sketch-holder"></div>
+
+    </section>
+
+  </main>
+
+
+  <script src="sketch.js"></script>
+
+</body>
+
 </html>
