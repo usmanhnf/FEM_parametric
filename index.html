@@ -1,54 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>FEM Parametric</title>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 60px auto;
-      padding: 0 20px;
-      line-height: 1.6;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 60px 30px;
     }
 
     h1 {
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-size: 36px;
     }
 
-    .status {
-      padding: 12px;
-      background: #e8f5e9;
-      border: 1px solid #81c784;
-      margin: 20px 0;
+    .intro {
+      color: #666;
+      font-size: 17px;
+      line-height: 1.6;
+      margin-bottom: 40px;
     }
 
-    a {
+    .project-list {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .project {
+      display: block;
+      padding: 18px 22px;
+      border-bottom: 1px solid #e5e5e5;
+      text-decoration: none;
+      color: #222;
+      transition: background 0.15s;
+    }
+
+    .project:last-child {
+      border-bottom: none;
+    }
+
+    .project:hover {
+      background: #f3f6fa;
+    }
+
+    .project-title {
       font-size: 18px;
+      font-weight: 600;
+    }
+
+    .project-folder {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    #status {
+      color: #777;
     }
   </style>
 </head>
 
+
 <body>
 
-  <h1>FEM Parametric</h1>
-  <p>Interactive finite element method demonstrations.</p>
+  <main class="container">
 
-  <div class="status">
-    If you can see this page, GitHub Pages is working.
-  </div>
+    <h1>FEM Parametric</h1>
 
-  <h2>Examples</h2>
+    <p class="intro">
+      Interactive demonstrations for the Finite Element Method.
+      Select an example below to open the corresponding interactive model.
+    </p>
 
-  <ul>
-    <li>
-      <a href="P01_strongweak/">
-        P01 — Strong and Weak Form
-      </a>
-    </li>
-  </ul>
+
+    <div id="status">
+      Loading examples...
+    </div>
+
+    <div id="project-list" class="project-list">
+    </div>
+
+  </main>
+
+
+  <script>
+
+    // ----------------------------------------------------------
+    // GitHub repository
+    // ----------------------------------------------------------
+
+    const githubUser = "usmanhnf";
+    const repository = "FEM_parametric";
+
+
+    // ----------------------------------------------------------
+    // Load folders from GitHub
+    // ----------------------------------------------------------
+
+    async function loadProjects() {
+
+      const status = document.getElementById("status");
+      const list = document.getElementById("project-list");
+
+      const apiURL =
+        `https://api.github.com/repos/${githubUser}/${repository}/contents/`;
+
+      try {
+
+        const response = await fetch(apiURL);
+
+        if (!response.ok) {
+          throw new Error("Could not read repository.");
+        }
+
+        const files = await response.json();
+
+
+        // Keep only project folders such as P01_, P02_, etc.
+        const folders = files
+          .filter(item =>
+            item.type === "dir" &&
+            /^P\d+_/i.test(item.name)
+          )
+          .sort((a, b) =>
+            a.name.localeCompare(
+              b.name,
+              undefined,
+              { numeric: true }
+            )
+          );
+
+
+        status.style.display = "none";
+
+
+        // ------------------------------------------------------
+        // Create list
+        // ------------------------------------------------------
+
+        folders.forEach(folder => {
+
+          const link = document.createElement("a");
+
+          link.className = "project";
+
+          link.href =
+            encodeURI(folder.name + "/");
+
+
+          // Make folder name more readable
+          // P04_CST_Parametric
+          // becomes
+          // P04 — CST Parametric
+
+          const match =
+            folder.name.match(/^(P\d+)_(.*)$/i);
+
+          let title = folder.name;
+
+          if (match) {
+
+            const number = match[1];
+
+            const description =
+              match[2].replaceAll("_", " ");
+
+            title =
+              `${number} — ${description}`;
+          }
+
+
+          link.innerHTML = `
+            <div class="project-title">
+              ${title}
+            </div>
+
+            <div class="project-folder">
+              ${folder.name}
+            </div>
+          `;
+
+          list.appendChild(link);
+
+        });
+
+
+        if (folders.length === 0) {
+          status.style.display = "block";
+          status.textContent =
+            "No interactive examples found.";
+        }
+
+      }
+
+      catch (error) {
+
+        status.textContent =
+          "Unable to load the project list.";
+
+        console.error(error);
+      }
+    }
+
+
+    loadProjects();
+
+  </script>
 
 </body>
+
 </html>
