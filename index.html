@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +7,10 @@
   <title>FEM Parametric</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -16,45 +19,54 @@
     }
 
     .container {
-      max-width: 1000px;
+      width: min(1000px, 100%);
       margin: 0 auto;
       padding: 60px 30px;
     }
 
     h1 {
-      margin-bottom: 8px;
+      margin: 0 0 8px;
       font-size: 36px;
     }
 
     .intro {
+      max-width: 700px;
+      margin: 0 0 40px;
       color: #666;
       font-size: 17px;
       line-height: 1.6;
-      margin-bottom: 40px;
     }
 
     .project-list {
-      background: white;
+      overflow: hidden;
+      background: #fff;
       border: 1px solid #ddd;
       border-radius: 6px;
-      overflow: hidden;
     }
 
     .project {
       display: block;
       padding: 18px 22px;
-      border-bottom: 1px solid #e5e5e5;
-      text-decoration: none;
       color: #222;
-      transition: background 0.15s;
+      text-decoration: none;
+      border-bottom: 1px solid #e5e5e5;
+      transition:
+        background-color 0.15s ease,
+        padding-left 0.15s ease;
     }
 
     .project:last-child {
-      border-bottom: none;
+      border-bottom: 0;
     }
 
     .project:hover {
+      padding-left: 27px;
       background: #f3f6fa;
+    }
+
+    .project:focus-visible {
+      outline: 3px solid #4c8bf5;
+      outline-offset: -3px;
     }
 
     .project-title {
@@ -64,21 +76,28 @@
 
     .project-folder {
       margin-top: 4px;
-      font-size: 13px;
       color: #888;
+      font-size: 13px;
     }
 
-    #status {
-      color: #777;
+    @media (max-width: 600px) {
+      .container {
+        padding: 36px 18px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .intro {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 
-
 <body>
-
   <main class="container">
-
     <h1>FEM Parametric</h1>
 
     <p class="intro">
@@ -86,141 +105,44 @@
       Select an example below to open the corresponding interactive model.
     </p>
 
+    <nav class="project-list" aria-label="Finite Element Method examples">
 
-    <div id="status">
-      Loading examples...
-    </div>
+      <a class="project" href="./P01_strongweak/">
+        <div class="project-title">P01 — Strong and Weak Form</div>
+        <div class="project-folder">P01_strongweak</div>
+      </a>
 
-    <div id="project-list" class="project-list">
-    </div>
+      <a class="project" href="./P02_shapefunction_line/">
+        <div class="project-title">P02 — Line Shape Functions</div>
+        <div class="project-folder">P02_shapefunction_line</div>
+      </a>
 
+      <a class="project" href="./P03_shapefunction_triangle/">
+        <div class="project-title">P03 — Triangle Shape Functions</div>
+        <div class="project-folder">P03_shapefunction_triangle</div>
+      </a>
+
+      <a class="project" href="./P04_CST_Parametric/">
+        <div class="project-title">P04 — CST Parametric</div>
+        <div class="project-folder">P04_CST_Parametric</div>
+      </a>
+
+      <a class="project" href="./P05_LST_Parametric/">
+        <div class="project-title">P05 — LST Parametric</div>
+        <div class="project-folder">P05_LST_Parametric</div>
+      </a>
+
+      <a class="project" href="./P06_Q4_Parametric/">
+        <div class="project-title">P06 — Q4 Parametric</div>
+        <div class="project-folder">P06_Q4_Parametric</div>
+      </a>
+
+      <a class="project" href="./P07_Q8Q9_Parametric/">
+        <div class="project-title">P07 — Q8 and Q9 Parametric</div>
+        <div class="project-folder">P07_Q8Q9_Parametric</div>
+      </a>
+
+    </nav>
   </main>
-
-
-  <script>
-
-    // ----------------------------------------------------------
-    // GitHub repository
-    // ----------------------------------------------------------
-
-    const githubUser = "usmanhnf";
-    const repository = "FEM_parametric";
-
-
-    // ----------------------------------------------------------
-    // Load folders from GitHub
-    // ----------------------------------------------------------
-
-    async function loadProjects() {
-
-      const status = document.getElementById("status");
-      const list = document.getElementById("project-list");
-
-      const apiURL =
-        `https://api.github.com/repos/${githubUser}/${repository}/contents/`;
-
-      try {
-
-        const response = await fetch(apiURL);
-
-        if (!response.ok) {
-          throw new Error("Could not read repository.");
-        }
-
-        const files = await response.json();
-
-
-        // Keep only project folders such as P01_, P02_, etc.
-        const folders = files
-          .filter(item =>
-            item.type === "dir" &&
-            /^P\d+_/i.test(item.name)
-          )
-          .sort((a, b) =>
-            a.name.localeCompare(
-              b.name,
-              undefined,
-              { numeric: true }
-            )
-          );
-
-
-        status.style.display = "none";
-
-
-        // ------------------------------------------------------
-        // Create list
-        // ------------------------------------------------------
-
-        folders.forEach(folder => {
-
-          const link = document.createElement("a");
-
-          link.className = "project";
-
-          link.href =
-            encodeURI(folder.name + "/");
-
-
-          // Make folder name more readable
-          // P04_CST_Parametric
-          // becomes
-          // P04 — CST Parametric
-
-          const match =
-            folder.name.match(/^(P\d+)_(.*)$/i);
-
-          let title = folder.name;
-
-          if (match) {
-
-            const number = match[1];
-
-            const description =
-              match[2].replaceAll("_", " ");
-
-            title =
-              `${number} — ${description}`;
-          }
-
-
-          link.innerHTML = `
-            <div class="project-title">
-              ${title}
-            </div>
-
-            <div class="project-folder">
-              ${folder.name}
-            </div>
-          `;
-
-          list.appendChild(link);
-
-        });
-
-
-        if (folders.length === 0) {
-          status.style.display = "block";
-          status.textContent =
-            "No interactive examples found.";
-        }
-
-      }
-
-      catch (error) {
-
-        status.textContent =
-          "Unable to load the project list.";
-
-        console.error(error);
-      }
-    }
-
-
-    loadProjects();
-
-  </script>
-
 </body>
-
 </html>
