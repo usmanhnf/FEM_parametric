@@ -29,7 +29,7 @@ let sliderDragging = false;
 // 2 = linear
 // 3 = quadratic
 
-let elementOrder = 3;
+let elementOrder = 2;
 
 
 // ============================================================
